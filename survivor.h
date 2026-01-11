@@ -15,11 +15,11 @@ typedef enum{
     MISSING
 }SurvivorStatus;
 
-struct Survivor {
-    char name[100];
-    SurvivorSkill skill;
-    int food;
-    int health;
-    int danger;
-    SurvivorStatus status;
-};
+typedef struct {
+    char name[100]; // unique survivor's name
+    SurvivorSkill skill; // enum SurvivorSkill
+    int food; // 0-100
+    int health; // 0-100
+    int danger; // 0-10
+    SurvivorStatus status; // enum SurvivorStatus
+}Survivor;
