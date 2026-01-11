@@ -23,3 +23,8 @@ typedef struct {
     int danger; // 0-10
     SurvivorStatus status; // enum SurvivorStatus
 }Survivor;
+
+typedef struct {
+    Survivor data;
+    struct Node* next;
+}Node;
