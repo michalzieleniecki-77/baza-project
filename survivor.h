@@ -29,5 +29,4 @@ Survivor get_survivor_data(void);
 const char* get_skill_name(SurvivorSkill skill);
 const char* get_status_name(SurvivorStatus status);
 void free_list(Node* head);
-void sort_list(Node* head);
 #endif
