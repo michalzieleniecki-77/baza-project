@@ -1,20 +1,12 @@
-typedef enum{
-    MEDIC,
-    ENGINEER,
-    SCOUT,
-    TECHNICIAN,
-    BIOLOGIST,
-    MECHANIC
-}SurvivorSkill;
+#ifndef SURVIVOR_H
+#define SURVIVOR_H
 
-typedef enum{
-    ACTIVE,
-    SICK,
-    INJURED,
-    OUTSIDE,
-    MISSING
-}SurvivorStatus;
 
+// Enums
+typedef enum{MEDIC, ENGINEER, SCOUT, TECHNICIAN, BIOLOGIST, MECHANIC}SurvivorSkill;
+typedef enum{ACTIVE, SICK, INJURED, OUTSIDE, MISSING}SurvivorStatus;
+
+//Structs
 typedef struct {
     char name[100]; // unique survivor's name
     SurvivorSkill skill; // enum SurvivorSkill
@@ -24,7 +16,18 @@ typedef struct {
     SurvivorStatus status; // enum SurvivorStatus
 }Survivor;
 
-typedef struct {
+typedef struct Node {
     Survivor data;
     struct Node* next;
 }Node;
+
+//Prototypes
+Node* create_node(Survivor data);
+void push(Node** head_ref, Survivor new_data);
+void display_list(Node* head);
+Survivor get_survivor_data(void);
+const char* get_skill_name(SurvivorSkill skill);
+const char* get_status_name(SurvivorStatus status);
+void free_list(Node* head);
+void sort_list(Node* head);
+#endif

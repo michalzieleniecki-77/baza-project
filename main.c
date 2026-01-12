@@ -3,22 +3,42 @@
 #include <string.h>
 #include "survivor.h"
 
-Node* create_node(Survivor data);
-
 int main(void) {
-    //Survivor survivor[] = {{"Michal", MECHANIC, 60, 99, 8, ACTIVE}};
-    //printf("Hello %s, wec can tell that you are %s.", survivor[0].name, (survivor[0].danger < 7) ? "not dangerous, you can join to us" : "dangerous, you have to go away");
-    Survivor michal = {"Michal", MECHANIC, 60, 99, 2, ACTIVE};
-    Node* head = create_node(michal);
-    printf("%s", head->data.name);
-}
+    Node* head = NULL;
+    int choice = -1;
 
-Node* create_node(Survivor data) {
-    Node* new_node = (Node*)malloc(sizeof(Node));
-    if (new_node == NULL) {
-        return NULL; 
+    while (choice != 0) {
+        printf("\n----Base 17----\n");
+        printf("1. Register a new survivor\n");
+        printf("2. Search for a survivor\n");
+        printf("3. Modify survivor\n");
+        printf("4. Sort list of survivors\n");
+        printf("5. Remove survivor\n");
+        printf("6. Save from file\n");
+        printf("7. Read from file\n");
+        printf("8. Close program.\n");
+
+        if(scanf("%d", &choice) != 1) {
+            printf("Invalid input!\n");
+            while(getchar() != '\n');
+            continue;
+        }
+
+        switch(choice) {
+            case 1: {
+                Survivor newSurvivor = get_survivor_data();
+                push(&head, newSurvivor);
+                printf("New survivor succesfully added\n");
+            }
+            case 8: {
+                printf("Goodbye...");
+                return 0;
+            }
+            default: {
+                printf("\nWRONG!! CHOOSE NUMBER BETWEEN 1-8!\n");
+            }
+        }
     }
-    new_node->data = data;
-    new_node->next = NULL;
-    return new_node;
+    free_list(head);
+    return 0;
 }
