@@ -29,4 +29,6 @@ Survivor get_survivor_data(void);
 const char* get_skill_name(SurvivorSkill skill);
 const char* get_status_name(SurvivorStatus status);
 void free_list(Node* head);
+void save_to_file(Node* head, const char* filename);
+void load_from_file(Node** head_ref, const char* filename);
 #endif
