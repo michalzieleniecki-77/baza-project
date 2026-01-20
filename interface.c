@@ -21,14 +21,12 @@ void push(Node** head_ref, Survivor new_data) {
 Survivor get_survivor_data(void) {
     Survivor survivor;
     int choice;
-
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
     //Getting name
     printf("Enter name: ");
-    getchar();
-    fgets(survivor.name, sizeof(survivor.name), stdin);
-    size_t length = strlen(survivor.name);
-    if(length > 0 && survivor.name[length - 1] == '\n') {
-        survivor.name[length - 1] = '\0';
+    if(fgets(survivor.name, sizeof(survivor.name), stdin)) {
+        survivor.name[strcspn(survivor.name, "\n")] = 0;
     }
 
     //Getting skill
@@ -52,6 +50,8 @@ Survivor get_survivor_data(void) {
     printf("Enter status (0:ACTIVE, 1:SICK, 2:INJURED, 3:OUTSIDE, 4:MISSING): ");
     scanf("%d", &choice);
     survivor.status = (SurvivorStatus)choice;
+
+    while ((c = getchar()) != '\n' && c != EOF);
 
     return survivor;
 }
@@ -109,9 +109,18 @@ void free_list(Node* head) {
 }
 
 void save_to_file(Node* head, const char* filename) {
+    if (head == NULL) {
+        printf("\nWARNING: Current list is empty! Saving will erase your file\n");
+        printf("Are you sure? (1-Yes / 0-No): ");
+        int confirm;
+        if (scanf("%d", &confirm) != 1 || confirm != 1) {
+            printf("Save aborted. Your file is safe\n");
+            return;
+        }
+    }
     FILE* file = fopen(filename, "w");
     if (file == NULL) {
-        printf("Error");
+        printf("Error opening file!!");
         return;
     }
 
@@ -152,4 +161,161 @@ void load_from_file(Node** head_ref, const char* filename) {
             }
             fclose(file);
             printf("%d records loaded\n", counter);
+}
+
+Node* search_survivor(Node* head, const char* searched_name) {
+    Node* current = head;
+
+    while (current != NULL) {
+        if(strcmp(current->data.name, searched_name) == 0) {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
+void modify_survivor(Node* head) {
+    char name_to_find[100];
+    int c;
+    while((c = getchar()) != '\n' && c != EOF);
+
+    printf("Enter the name of survivor you want to modify: ");
+    if(fgets(name_to_find, sizeof(name_to_find), stdin)) {
+        name_to_find[strcspn(name_to_find, "\n")] = 0;
+    }
+
+    Node* target = search_survivor(head, name_to_find);
+
+    if(target == NULL) {
+        printf("Survivor %s not found", name_to_find);
+        return;
+    }
+
+    int choice;
+    printf("\nModifying data for: %s\n", target->data.name);
+    printf("1. Health (%d)\n", target->data.health);
+    printf("2. Food rations (%d)\n", target->data.food);
+    printf("3. Status (%s)\n", get_status_name(target->data.status));
+    printf("4. Danger level (%d)\n", target->data.danger);
+    printf("0. Cancel\n");
+    printf("Choose what to change: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            printf("New health (0-100): ");
+            scanf("%d", &target->data.health);
+            break;
+        case 2:
+            printf("New food rations (0-100): ");
+            scanf("%d", &target->data.food);
+            break;
+        case 3:
+            printf("New status (0:ACTIVE, 1:SICK, 2:INJURED, 3:OUTSIDE, 4:MISSING): ");
+            int new_status;
+            scanf("%d", &new_status);
+            target->data.status = (SurvivorStatus)new_status;
+            break;
+        case 4:
+            printf("New danger level (0-10): ");
+            scanf("%d", &target->data.danger);
+            break;
+        case 0:
+            printf("Modification cancelled.\n");
+            return;
+        default:
+            printf("Invalid choice.\n");
+            return;
+    }
+    while((c = getchar()) != '\n' && c != EOF);
+    printf("Data updated succesfully!\n");
+}
+
+void remove_survivor(Node** head_ref) {
+    if (*head_ref == NULL) { 
+        printf("The list is empty\n");
+        return;
+    }
+
+    char name_to_remove[100];
+    printf("Enter the name of the survivor to remove: ");
+    scanf("%99s", name_to_remove);
+
+    Node *current = *head_ref;
+    Node *prev = NULL;
+
+    while (current != NULL && strcmp(current->data.name, name_to_remove) != 0) {
+        prev = current;
+        current = current->next;
+    }
+
+    if(current == NULL) {
+        printf("Survivor %s not found\n", name_to_remove);
+        return;
+    }
+
+    if (current->data.status == OUTSIDE) {
+        printf("Error. %s is currently OUTSIDE the base\n", name_to_remove);
+        return;
+    }
+
+    if (prev == NULL) {
+        *head_ref = current->next;
+    } else {
+        prev->next = current->next;
+    }
+
+    free(current);
+    printf("Survivor %s has been succesfully removed from the base\n", name_to_remove);
+}
+
+void swap_nodes_data(Node* a, Node* b) {
+    Survivor temp = a->data;
+    a->data = b->data;
+    b->data = temp;
+}
+
+void sort_by_name(Node* head) { 
+    if (head == NULL) return;
+    int swapped;
+    Node* ptr1;
+    Node* lptr = NULL;
+
+    do {
+        swapped = 0;
+        ptr1 = head;
+
+        while(ptr1->next != lptr) {
+            if(strcmp(ptr1->data.name, ptr1->next->data.name) > 0 ) {
+                swap_nodes_data(ptr1, ptr1->next);
+                swapped = 1;
+            }
+            ptr1 = ptr1->next;
+        }
+        lptr = ptr1;
+    } while(swapped);
+    printf("List sorted alphabetically by name.\n");
+}
+
+void sort_by_danger(Node* head) {
+    if (head == NULL) return;
+    int swapped;
+    Node* ptr1;
+    Node* lptr = NULL;
+
+    do {
+        swapped = 0;
+        ptr1 = head;
+
+        while(ptr1->next != lptr) {
+            if(ptr1->data.danger < ptr1->next->data.danger) {
+                swap_nodes_data(ptr1, ptr1->next);
+                swapped = 1;
+            }
+            ptr1 = ptr1->next;
+        }
+        lptr = ptr1;
+    }while(swapped);
+    printf("List sorted by danger level.\n");
 }
