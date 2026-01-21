@@ -3,6 +3,19 @@
 #include <string.h>
 #include "survivor.h"
 
+int get_safe_int(int min, int max) {
+    int value;
+    while (1) {
+        if (scanf("%d", &value) == 1 && value >= min && value <= max) {
+            return value;
+        } else {
+            printf("Invalid input! Please enter a number between %d and %d: ", min, max);
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF);
+        }
+    }
+}
+
 Node* create_node(Survivor data) {
     Node* new_node = (Node*)malloc(sizeof(Node));
     if (new_node == NULL) return NULL;
@@ -32,26 +45,23 @@ Survivor get_survivor_data(void) {
     //Getting skill
     printf("Enter skill (0:MEDIC, 1:ENGINEER, 2:SCOUT, 3:TECHNICIAN, 4:BIOLOGIST, 5:MECHANIC): ");
     scanf("%d", &choice);
-    survivor.skill = (SurvivorSkill)choice;
+    survivor.skill = (SurvivorSkill)get_safe_int(0, 5);
 
     //Getting food lvl
     printf("Enter food rations (0-100): ");
-    scanf("%d", &survivor.food);
+    survivor.food = get_safe_int(0, 100);
 
     //Getting health
     printf("Enter health level (0-100): ");
-    scanf("%d", &survivor.health);
+    survivor.health = get_safe_int(0, 100);
     
     //Getting danger level
     printf("Enter danger level (0-10): ");
-    scanf("%d", &survivor.danger);
+    survivor.danger = get_safe_int(0, 10);
 
     //Getting status
     printf("Enter status (0:ACTIVE, 1:SICK, 2:INJURED, 3:OUTSIDE, 4:MISSING): ");
-    scanf("%d", &choice);
-    survivor.status = (SurvivorStatus)choice;
-
-    while ((c = getchar()) != '\n' && c != EOF);
+    survivor.status = (SurvivorStatus)get_safe_int(0, 4);
 
     return survivor;
 }
